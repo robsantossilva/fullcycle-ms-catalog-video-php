@@ -3,7 +3,7 @@
 namespace Tests\Unit\Domain\Entity;
 
 use Core\Domain\Entity\Category;
-use Core\Domain\Validation\EntityValidationException;
+use Core\Domain\Exception\EntityValidationException;
 use PHPUnit\Framework\TestCase;
 
 class CategoryUnitTest extends TestCase
@@ -67,7 +67,7 @@ class CategoryUnitTest extends TestCase
     public function testExceptionName()
     {
         try {
-            $category = new Category(
+            new Category(
                 name: 'Ne',
                 description: 'New Desc'
             );
