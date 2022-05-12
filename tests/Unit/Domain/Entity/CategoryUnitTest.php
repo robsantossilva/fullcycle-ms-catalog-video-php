@@ -68,7 +68,7 @@ class CategoryUnitTest extends TestCase
     {
         try {
             new Category(
-                name: 'Ne',
+                name: 'N',
                 description: 'New Desc'
             );
             $this->assertTrue(false);
