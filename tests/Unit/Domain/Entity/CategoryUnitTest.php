@@ -5,19 +5,20 @@ namespace Tests\Unit\Domain\Entity;
 use Core\Domain\Entity\Category;
 use Core\Domain\Exception\EntityValidationException;
 use PHPUnit\Framework\TestCase;
+use Ramsey\Uuid\Uuid;
 
 class CategoryUnitTest extends TestCase
 {
     public function testAttributes()
     {
         $category = new Category(
-            id: '123',
             name: 'New Cat',
             description: 'New desc',
             isActive: true
         );
 
-        $this->assertEquals('123', $category->id);
+        $this->assertNotEmpty($category->id);
+        $this->assertNotEmpty($category->createdAt);
         $this->assertEquals('New Cat', $category->name);
         $this->assertEquals('New desc', $category->description);
         $this->assertTrue($category->isActive);
@@ -40,19 +41,20 @@ class CategoryUnitTest extends TestCase
             name: 'New Cat'
         );
         $this->assertTrue($category->isActive);
-        $category->desable();
+        $category->disable();
         $this->assertFalse($category->isActive);
     }
 
     public function testUpdate()
     {
-        $uuid = 'uuid.value';
+        $uuid = (string) Uuid::uuid4()->toString();
 
         $category = new Category(
             id: $uuid,
             name: 'New Cat',
             description: 'New desc',
-            isActive: true
+            isActive: true,
+            createdAt: '2012-12-12 12:12:12'
         );
 
         $category->update(
@@ -60,6 +62,8 @@ class CategoryUnitTest extends TestCase
             description: 'new_desc'
         );
 
+        $this->assertEquals($uuid, $category->id);
+        $this->assertEquals('2012-12-12 12:12:12', $category->createdAt);
         $this->assertEquals('new_name', $category->name);
         $this->assertEquals('new_desc', $category->description);
     }
@@ -70,6 +74,19 @@ class CategoryUnitTest extends TestCase
             new Category(
                 name: 'N',
                 description: 'New Desc'
+            );
+            $this->assertTrue(false);
+        } catch (\Throwable $th) {
+            $this->assertInstanceOf(EntityValidationException::class, $th);
+        }
+    }
+
+    public function testExceptionDescription()
+    {
+        try {
+            new Category(
+                name: 'New Cat',
+                description: random_bytes(256)
             );
             $this->assertTrue(false);
         } catch (\Throwable $th) {
